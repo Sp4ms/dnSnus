@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# dnSnus output
+*_dns.csv
+*_debug.txt
+zones/
+*.zone
+
+# Local secrets and configuration
+.env
+.env.*

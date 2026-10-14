@@ -5,7 +5,7 @@
 
 A Python-based DNS enumeration and security auditing tool designed to discover DNS records, analyze email authentication configurations, identify potentially sensitive network information, and test DNS servers for zone transfer vulnerabilities.
 
-DNS Audit combines standard DNS reconnaissance with targeted security checks, including **SPF, DKIM, and DMARC validation through the MXToolbox API**, detection of internal IP addresses in DNS records, and DNS zone transfer (AXFR) testing.
+dnSnus combines standard DNS reconnaissance with targeted security checks, including **SPF, DKIM, and DMARC validation through the MXToolbox API**, detection of internal IP addresses in DNS records, and DNS zone transfer (AXFR) testing.
 
 Designed for security professionals, penetration testers, bug bounty hunters, system administrators, and anyone looking to better understand their organization's DNS security posture.
 
@@ -74,7 +74,7 @@ python -m pip install dnspython requests
 ### 4. Verify Installation
 
 ```bash
-python dns_audit.py --help
+python dnSnus.py --help
 ```
 
 ## Quick Start
@@ -82,7 +82,7 @@ python dns_audit.py --help
 Run a basic DNS enumeration:
 
 ```bash
-python dns_audit.py example.com
+python dnSnus.py example.com
 ```
 
 This will:
@@ -101,7 +101,7 @@ MXToolbox API lookups are skipped unless an API key is provided.
 ### Full Example
 
 ```bash
-python dns_audit.py example.com \
+python dnSnus.py example.com \
     --srvs srvs.txt \
     --selectors selectors.txt \
     --resolvers resolvers.txt \
@@ -134,7 +134,7 @@ python dns_audit.py example.com \
 
 ### 1. DNS Record Enumeration
 
-DNS Audit queries the specified domain for the following record types:
+dnSnus queries the specified domain for the following record types:
 
 | Record | Description | Security Relevance |
 |---|---|---|
@@ -160,7 +160,7 @@ The tool uses the `dnspython` library to query each record type and collect succ
 
 SRV records advertise service endpoints, including their hostnames, ports, priorities, and weights.
 
-Rather than querying only the domain's root SRV record, DNS Audit supports a customizable wordlist of service prefixes.
+Rather than querying only the domain's root SRV record, dnSnus supports a customizable wordlist of service prefixes.
 
 Example `srvs.txt`:
 
@@ -202,7 +202,7 @@ priority weight port target
 
 Sender Policy Framework (SPF) is an email authentication mechanism that identifies which systems are authorized to send email on behalf of a domain.
 
-DNS Audit searches the domain's TXT records for entries beginning with:
+dnSnus searches the domain's TXT records for entries beginning with:
 
 ```text
 v=spf1
@@ -256,7 +256,7 @@ DKIM records commonly reside at:
 <selector>._domainkey.<domain>
 ```
 
-DNS Audit uses a customizable wordlist to identify selectors.
+dnSnus uses a customizable wordlist to identify selectors.
 
 Example `selectors.txt`:
 
@@ -307,7 +307,7 @@ The `argument` query parameter contains the domain and selector separated by a c
 
 Domain-based Message Authentication, Reporting, and Conformance (DMARC) builds on SPF and DKIM to define how receiving mail servers should handle messages that fail authentication and alignment checks.
 
-DNS Audit queries:
+dnSnus queries:
 
 ```text
 _dmarc.example.com
@@ -337,7 +337,7 @@ The tool retrieves and displays DMARC TXT records and delegates additional diagn
 
 ### 6. MXToolbox API Integration
 
-DNS Audit optionally integrates with the [MXToolbox API](https://mxtoolbox.com/api/api-reference) to provide additional email authentication diagnostics.
+dnSnus optionally integrates with the [MXToolbox API](https://mxtoolbox.com/api/api-reference) to provide additional email authentication diagnostics.
 
 An MXToolbox API key is required.
 
@@ -364,7 +364,7 @@ Matching diagnostics are printed to standard output.
 **API key configuration:**
 
 ```bash
-python dns_audit.py example.com --mxtoolbox-api-key "YOUR_API_KEY"
+python dnSnus.py example.com --mxtoolbox-api-key "YOUR_API_KEY"
 ```
 
 Alternatively, set the `DEFAULT_MXTOOLBOX_API_KEY` variable in the script.
@@ -373,7 +373,7 @@ Alternatively, set the `DEFAULT_MXTOOLBOX_API_KEY` variable in the script.
 
 ### 7. Internal IP Address Detection
 
-DNS Audit examines collected DNS record values for IP addresses that fall within selected internal or non-public network ranges.
+dnSnus examines collected DNS record values for IP addresses that fall within selected internal or non-public network ranges.
 
 Supported ranges include:
 
@@ -410,7 +410,7 @@ DNS zone transfers allow DNS servers to replicate zone data between authoritativ
 
 If a server permits an unauthorized AXFR request, it may disclose a large portion of its DNS namespace.
 
-DNS Audit:
+dnSnus:
 
 1. Discovers the domain's NS records.
 2. Resolves each nameserver to its IPv4 and IPv6 addresses.
@@ -437,20 +437,20 @@ zones/
 To specify another directory:
 
 ```bash
-python dns_audit.py example.com --zone-dir axfr_results
+python dnSnus.py example.com --zone-dir axfr_results
 ```
 
 To disable AXFR testing:
 
 ```bash
-python dns_audit.py example.com --skip-axfr
+python dnSnus.py example.com --skip-axfr
 ```
 
 **Important:** A successful zone transfer is not automatically an unauthorized disclosure. AXFR can be intentionally permitted for authorized secondary DNS servers. Additionally, an AXFR failure may result from an explicit refusal, timeout, connection failure, or another DNS error.
 
 ### 9. Reverse DNS (PTR) Lookups
 
-DNS Audit performs reverse DNS queries for IPv4 and IPv6 addresses discovered through the domain's A and AAAA records.
+dnSnus performs reverse DNS queries for IPv4 and IPv6 addresses discovered through the domain's A and AAAA records.
 
 For example, an IPv4 address is converted into its reverse DNS representation:
 
@@ -470,7 +470,7 @@ The tool then queries the resulting name for PTR records.
 
 ### 10. Custom DNS Resolvers
 
-By default, DNS Audit uses the operating system's configured DNS resolvers.
+By default, dnSnus uses the operating system's configured DNS resolvers.
 
 Custom DNS resolvers can be supplied using a text file.
 
@@ -486,7 +486,7 @@ Example `resolvers.txt`:
 Usage:
 
 ```bash
-python dns_audit.py example.com --resolvers resolvers.txt
+python dnSnus.py example.com --resolvers resolvers.txt
 ```
 
 Each line must contain a valid IPv4 or IPv6 address. Empty lines and comments beginning with `#` are ignored.
@@ -534,7 +534,7 @@ The CSV contains records discovered through the normal DNS enumeration routines.
 Enable debug logging with:
 
 ```bash
-python dns_audit.py example.com --debug-file debug.txt
+python dnSnus.py example.com --debug-file debug.txt
 ```
 
 The debug file can contain:
@@ -549,7 +549,7 @@ The debug file can contain:
 To print detailed logging to the terminal:
 
 ```bash
-python dns_audit.py example.com --verbose
+python dnSnus.py example.com --verbose
 ```
 
 Both options can be used simultaneously.
@@ -561,43 +561,43 @@ Both options can be used simultaneously.
 **Basic DNS enumeration**
 
 ```bash
-python dns_audit.py example.com
+python dnSnus.py example.com
 ```
 
 **DNS enumeration with custom resolvers**
 
 ```bash
-python dns_audit.py example.com --resolvers resolvers.txt
+python dnSnus.py example.com --resolvers resolvers.txt
 ```
 
 **Email security analysis using MXToolbox**
 
 ```bash
-python dns_audit.py example.com --mxtoolbox-api-key "YOUR_API_KEY"
+python dnSnus.py example.com --mxtoolbox-api-key "YOUR_API_KEY"
 ```
 
 **Custom SRV and DKIM selector wordlists**
 
 ```bash
-python dns_audit.py example.com --srvs custom_srvs.txt --selectors custom_selectors.txt
+python dnSnus.py example.com --srvs custom_srvs.txt --selectors custom_selectors.txt
 ```
 
 **Save CSV and debug output**
 
 ```bash
-python dns_audit.py example.com --output results.csv --debug-file debug.txt
+python dnSnus.py example.com --output results.csv --debug-file debug.txt
 ```
 
 **DNS enumeration without AXFR or MXToolbox**
 
 ```bash
-python dns_audit.py example.com --skip-axfr --skip-mxtoolbox
+python dnSnus.py example.com --skip-axfr --skip-mxtoolbox
 ```
 
 **Increase DNS query timeouts**
 
 ```bash
-python dns_audit.py example.com --timeout 10 --lifetime 15
+python dnSnus.py example.com --timeout 10 --lifetime 15
 ```
 
 ## Troubleshooting
@@ -617,7 +617,7 @@ python dns_audit.py example.com --timeout 10 --lifetime 15
 For detailed troubleshooting:
 
 ```bash
-python dns_audit.py example.com --verbose --debug-file debug.txt
+python dnSnus.py example.com --verbose --debug-file debug.txt
 ```
 
 ## Known Limitations
@@ -634,57 +634,13 @@ python dns_audit.py example.com --verbose --debug-file debug.txt
 
 ## Security and Responsible Use
 
-DNS Audit is intended for legitimate security assessments, infrastructure auditing, and authorized penetration testing.
+dnSnus is intended for legitimate security assessments, infrastructure auditing, and authorized penetration testing.
 
 Only perform testing against domains and DNS infrastructure you own or are explicitly authorized to assess.
 
 While most DNS lookups are standard operations, AXFR attempts may be logged, filtered, or prohibited by the target organization's security policy.
 
 Users are responsible for complying with applicable laws, service-provider terms, and testing agreements.
-
-## Suggested Repository Structure
-
-```text
-dns-audit/
-├── dns_audit.py
-├── README.md
-├── requirements.txt
-├── srvs.txt
-├── selectors.txt
-├── resolvers.txt
-├── .gitignore
-└── LICENSE
-```
-
-The following files and directories are generated during execution and should generally not be committed:
-
-```text
-*_dns.csv
-*_debug.txt
-zones/
-.venv/
-__pycache__/
-```
-
-Suggested `.gitignore`:
-
-```gitignore
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-
-# DNS Audit output
-*_dns.csv
-*_debug.txt
-zones/
-*.zone
-
-# Local secrets and configuration
-.env
-.env.*
-```
 
 ## Potential Future Enhancements
 
@@ -712,7 +668,3 @@ Possible improvements include:
 - [RFC 7208 — Sender Policy Framework (SPF)](https://www.rfc-editor.org/rfc/rfc7208)
 - [RFC 6376 — DomainKeys Identified Mail (DKIM)](https://www.rfc-editor.org/rfc/rfc6376)
 - [RFC 7489 — DMARC](https://www.rfc-editor.org/rfc/rfc7489)
-
-## License
-
-Add a `LICENSE` file specifying the license under which this project is distributed. An MIT license is a common choice for open-source Python security utilities.
